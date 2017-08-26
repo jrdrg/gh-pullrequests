@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Main</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css">  </head>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <script src="main.js"></script>
+        <script>
+         var app = Elm.Main.fullscreen(localStorage.session || null);
+
+         app.ports.serializeSession.subscribe(function(session) {
+             localStorage.session = session;
+         });
+
+         window.addEventListener("storage", function(event) {
+             if (event.storageArea === localStorage && event.key === "session") {
+                 app.ports.onSessionChanged.send(event.newValue);
+             }
+         });
+        </script>
+    </body>
+</html>
