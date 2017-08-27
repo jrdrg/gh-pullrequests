@@ -18,17 +18,17 @@ import Views.PullRequests
     (,)
 
 
+type Msg
+    = SendRequest
+    | ListPullRequests (Result Http.Error (List PullRequest))
+
+
 type alias Model =
     { session : Session
     , repositories : List String
     , pullRequests : List PullRequest
     , error : String
     }
-
-
-type Msg
-    = SendRequest
-    | ListPullRequests (Result Http.Error (List PullRequest))
 
 
 main : Program Json.Decode.Value Model Msg
@@ -43,16 +43,20 @@ main =
 
 init : Json.Decode.Value -> ( Model, Cmd Msg )
 init value =
-    ( Model
-        (value
-            |> Data.Session.fromJson
-            |> Maybe.withDefault (Session Nothing)
+    let
+        model =
+            Model
+                (value
+                    |> Data.Session.fromJson
+                    |> Maybe.withDefault (Session Nothing)
+                )
+                []
+                []
+                ""
+    in
+        ( model
+        , getPullRequests model.session
         )
-        []
-        []
-        ""
-    , Cmd.none
-    )
 
 
 subscriptions model =
@@ -65,38 +69,69 @@ update msg model =
         ListPullRequests list ->
             case list of
                 Result.Ok requests ->
-                    { model | pullRequests = requests } => Cmd.none
+                    let
+                        sorted =
+                            requests |> List.sortWith sortDescending
+                    in
+                        { model | pullRequests = sorted } => Cmd.none
 
                 Result.Err (Http.BadPayload err _) ->
                     Debug.log "ERR" { model | error = err } => Cmd.none
 
-                _ ->
+                Result.Err _ ->
                     Debug.log "???" model => Cmd.none
 
         SendRequest ->
-            let
-                { session } =
-                    model
-
-                getList token =
-                    token
-                        |> Request.PullRequest.list
-                        |> Http.send ListPullRequests
-            in
-                session
-                    |> Data.Session.tryAction getList
-                    |> (,) model
+            model.session
+                |> getPullRequests
+                |> (,) model
 
 
 view model =
     div []
         [ navbar
         , section
-            [ textDiv "testing"
-            , requestButton
-            , Views.PullRequests.view model.pullRequests
+            [ Views.PullRequests.view model.pullRequests
             ]
         ]
+
+
+getPullRequests : Session -> Cmd Msg
+getPullRequests session =
+    let
+        getList token =
+            token
+                |> Request.PullRequest.list
+                |> Http.send ListPullRequests
+    in
+        session
+            |> Data.Session.tryAction getList
+
+
+sortDescending r1 r2 =
+    let
+        milestone =
+            .milestone >> Maybe.withDefault ""
+    in
+        case compare (milestone r1) (milestone r2) of
+            LT ->
+                GT
+
+            EQ ->
+                EQ
+
+            GT ->
+                LT
+
+
+errorMessage : Http.Error -> String
+errorMessage error =
+    case error of
+        Http.BadPayload message _ ->
+            Debug.log "ERR" message
+
+        _ ->
+            ""
 
 
 section children =

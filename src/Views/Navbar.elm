@@ -8,7 +8,7 @@ navbar =
     nav [ class "navbar" ]
         [ div
             [ class "navbar-brand" ]
-            [ a [ class "navbar-item" ] [ text "test" ] ]
+            [ a [ class "navbar-item" ] [ text "Github API stuff" ] ]
         , div
             [ class "navbar-menu" ]
             [ div
