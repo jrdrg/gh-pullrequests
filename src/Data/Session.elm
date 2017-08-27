@@ -1,4 +1,4 @@
-module Data.Session exposing (..)
+module Data.Session exposing (Session, decoder, fromJson, tryAction)
 
 import Json.Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (decode, required)

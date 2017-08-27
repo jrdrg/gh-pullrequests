@@ -5,6 +5,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Data.PullRequest exposing (PullRequest)
+import Views.Elements exposing (tag, card)
 
 
 view : List PullRequest -> Html msg
@@ -53,35 +54,24 @@ pullRequest pr =
                     "No milestone"
     in
         div
-            [ class "column is-4" ]
-            [ div [ class "card" ]
-                [ header
-                    [ class "card-header" ]
-                    [ p [ class "card-header-title" ]
-                        [ text title ]
-                    ]
-                , div
-                    [ class "card-content" ]
-                    [ div
-                        [ class "content" ]
-                        [ div
-                            []
-                            [ a
-                                [ target "_blank", href pr.repository.url ]
-                                [ text pr.repository.url ]
-                            ]
-                        , line body
-                        , line (pr.updatedAt |> formatDate)
-                        , div
-                            []
-                            (pr.labels |> List.map label)
-                        ]
-                    ]
-                , footer
-                    [ class "card-footer" ]
-                    [ cardButton url "Pull request"
-                    ]
+            [ class "column is-narrow" ]
+            [ card
+                [ p [ class "card-header-title" ]
+                    [ text title ]
                 ]
+                [ div
+                    []
+                    [ a
+                        [ target "_blank", href pr.repository.url ]
+                        [ text pr.repository.url ]
+                    ]
+                , line body
+                , line (pr.updatedAt |> formatDate)
+                , div
+                    []
+                    (pr.labels |> List.map label)
+                ]
+                [ cardButton url "Pull request" ]
             ]
 
 
@@ -111,14 +101,13 @@ byMilestone list =
 
 
 label label =
-    span
-        [ class "tag is-primary"
-        , style
+    tag label.name
+        [ style
             [ ( "background", "#" ++ label.color )
             , ( "margin-right", "5px" )
+            , ( "color", "white" )
             ]
         ]
-        [ text label.name ]
 
 
 line content =
