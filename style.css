@@ -5,3 +5,17 @@ body {
 .navbar {
     border-bottom: 1px solid antiquewhite;
 }
+
+.pullrequest-body {
+    white-space: pre;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.pullrequest-url {
+    margin-bottom: 5px;
+}
+
+.pullrequest-labels {
+    margin-top: 5px;
+}

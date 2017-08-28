@@ -1,6 +1,8 @@
 module Main exposing (..)
 
 import Http
+import Date
+import Time
 import Json.Decode
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -12,7 +14,7 @@ import Request.PullRequest
 import Data.AuthToken exposing (AuthToken)
 import Data.PullRequest exposing (PullRequest)
 import Views.PullRequests
-
+import DateUtils
 
 (=>) =
     (,)
@@ -25,13 +27,19 @@ type Msg
 
 type alias Model =
     { session : Session
-    , repositories : List String
+    , now : Date.Date
     , pullRequests : List PullRequest
     , error : String
     }
 
 
-main : Program Json.Decode.Value Model Msg
+type alias Flags =
+    { value : Json.Decode.Value
+    , now : Time.Time
+    }
+
+
+main : Program Flags Model Msg
 main =
     Html.programWithFlags
         { init = init
@@ -41,8 +49,8 @@ main =
         }
 
 
-init : Json.Decode.Value -> ( Model, Cmd Msg )
-init value =
+init : Flags -> ( Model, Cmd Msg )
+init { value, now } =
     let
         model =
             Model
@@ -50,7 +58,7 @@ init value =
                     |> Data.Session.fromJson
                     |> Maybe.withDefault (Session Nothing)
                 )
-                []
+                (now |> Date.fromTime)
                 []
                 ""
     in
@@ -89,7 +97,7 @@ update msg model =
 
 view model =
     div []
-        [ navbar
+        [ navbar model
         , section
             [ Views.PullRequests.view model.pullRequests
             ]

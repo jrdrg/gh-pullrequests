@@ -42,7 +42,7 @@ milestoneSection ( milestone, list ) =
 pullRequest : PullRequest -> Html msg
 pullRequest pr =
     let
-        { title, body, url } =
+        { title, body, url, repository } =
             pr
 
         milestone =
@@ -60,15 +60,15 @@ pullRequest pr =
                     [ text title ]
                 ]
                 [ div
-                    []
+                    [ class "pullrequest-url" ]
                     [ a
-                        [ target "_blank", href pr.repository.url ]
-                        [ text pr.repository.url ]
+                        [ target "_blank", href repository.url ]
+                        [ text repository.url ]
                     ]
-                , line body
+                , div [ class "pullrequest-body" ] [ text body ]
                 , line (pr.updatedAt |> formatDate)
                 , div
-                    []
+                    [ class "pullrequest-labels" ]
                     (pr.labels |> List.map label)
                 ]
                 [ cardButton url "Pull request" ]

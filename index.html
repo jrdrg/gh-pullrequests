@@ -10,7 +10,7 @@
     <body>
         <script src="main.js"></script>
         <script>
-         var app = Elm.Main.fullscreen(localStorage.session || null);
+         var app = Elm.Main.fullscreen({value: localStorage.session || null, now: Date.now()});
 
          app.ports.serializeSession.subscribe(function(session) {
              localStorage.session = session;
