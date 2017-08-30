@@ -7,9 +7,13 @@ body {
 }
 
 .pullrequest-body {
-    white-space: pre;
+    white-space: pre-wrap;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.message-body > .columns > .column.is-narrow {
+    max-width: 50%;
 }
 
 .pullrequest-url {
